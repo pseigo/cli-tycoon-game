@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <windows.h>
 #include "../include/FGraphic.h"
 #include "../include/Candy.h"
@@ -19,10 +20,13 @@ class Tycoon
         void PrintStoryIntro();
 
         void PrintMainMenu();
-        void GetMainMenuInput();
+        int GetMainMenuInput();
+
+        void PrintInventory();
 
         void PrintShop();
-        void GetShopInput();
+        bool GetShopInput();
+        bool ValidPurchase(int candyPrice, int amount, std::string candyName);
 
         void PlayDay();
 
@@ -31,9 +35,9 @@ class Tycoon
         FGraphic Box;
         std::vector<std::string> boxItems;
 
-        std::string boxDivider;
-
-        // inventory
+        int day;
+        int money;
+        std::string currency;
 
         // candy
         Candy ChocolateNut, ChocolateBar;

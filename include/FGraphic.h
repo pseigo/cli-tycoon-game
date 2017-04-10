@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <windows.h>
+
+void ClearScreen();
 
 class FGraphic
 {
