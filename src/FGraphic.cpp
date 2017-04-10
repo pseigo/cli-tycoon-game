@@ -1,14 +1,7 @@
 #include "../include/FGraphic.h"
 
-FGraphic::FGraphic()
-{
-    //ctor
-}
-
-FGraphic::~FGraphic()
-{
-    //dtor
-}
+FGraphic::FGraphic() { div = "======================"; }
+FGraphic::~FGraphic() { /*dtor*/}
 
 // define boxwidth as an int. boxwidth < 1 will automatically set a width (slower).
 void FGraphic::drawBox(int boxWidth, std::vector<std::string> items) const
@@ -50,4 +43,53 @@ void FGraphic::drawBox(int boxWidth, std::vector<std::string> items) const
     for (int i = 0; i < boxWidth; i++) { std::cout << pStraightHorizontal; }
     std::cout << pCornerBottomRight << std::endl;
 
+}
+
+std::string FGraphic::toString(int number)
+{
+    std::string answer = "";
+
+    if (number < 0)
+    {
+        answer += '-';
+        number *= (-1);
+    }
+    else if (number == 0) { return "0"; }
+
+    // calculating the length
+    int length = 0;
+    for (length; pow(10,length) < number; length++);
+
+    do
+    {
+        // the number we want to subtract from the original number
+        /* Using pow(x,y) leads to rounding errors that are not acceptable so I am using
+            repeated division by 10 to eliminate that error.  Multiplier is a copy of the number
+            because I will be changing the number as I operate on it.
+        */
+        int multiplier = number;
+        while (multiplier > 9) {
+            multiplier /= 10;
+        }
+        // cout << "multiplier:" << multiplier << endl;
+
+        /* Now I know what the left most number is (multiplier), so I can add it to the string*/
+        answer += (char)(multiplier + 48);
+        //cout << "Answer so far: " << answer << endl;
+
+        /* Since I can't use pow(x,y), I am using repeated multiplication by 10 to get the right divisor*/
+        int base = 1;
+        for (int x = 0; x < length - 1; x++) {
+            base *= 10;
+        }
+        // cout << "base:" <<base << endl;
+
+        /* At this point, I have the leftmost number (multiplier) and the place value (base) as integers
+            so I can mulitply them and subtract them from the number*/
+        number = number - (base * multiplier);
+
+        length--;
+    } while (length > 0);
+
+    return answer;
 }

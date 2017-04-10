@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cmath>
 #include "include/FGraphic.h"
 #include "include/Tycoon.h"
 
@@ -84,7 +83,7 @@ string toString(int number)
 
 void PrintIntro(FGraphic Box)
 {
-    vector<string> boxItems = {"Welcome to Candy Tycoon.", "0. Exit Game", "1. Start Game", "", "------------------------", "To go where no second", "grader has gone before."};
+    vector<string> boxItems = {"Welcome to Candy Tycoon.", "0. Exit Game", "1. Start Game", "", Box.div, "To go where no second", "grader has gone before."};
     Box.drawBox(26, boxItems);
 }
 
@@ -112,7 +111,8 @@ bool AskToPlayGame()
 
 void PlayGame()
 {
-    Tycoon Candy;
+    Tycoon Tc;
 
-    Candy.PrintStoryIntro();
+    Tc.PrintStoryIntro();
+    Tc.PrintMainMenu();
 }
