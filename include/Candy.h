@@ -24,6 +24,7 @@ class Candy
         void SetId(std::string);
         void SetAttributes();
         void AddQuantity(int purchaseAmount);
+        void RemoveQuantity(int purchaseAmount);
 
     protected:
     private:

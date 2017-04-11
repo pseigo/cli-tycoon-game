@@ -8,8 +8,11 @@ void Tycoon::Reset()
     boxItems.clear();
 
     day = 1;
-    money = 100;
+    money = 100; // all money is in cents!
+    bullyMoney = 0;
     currency = '$';
+
+    dayIncome = 0;
 
     // Candy
     ChocolateNut.SetId("CHOCNUT");
@@ -110,7 +113,7 @@ void Tycoon::PrintShop()
 
     boxItems.push_back("== Chocolate ==");
     boxItems.push_back("1. " + currency + ChocolateNut.SGetBuyPrice() + priceText + ChocolateNut.GetName() + " (have " + ChocolateNut.SGetQuantity() + ")");
-    boxItems.push_back("2. " + currency + ChocolateBar.SGetBuyPrice() + priceText + ChocolateBar.GetName() + " (have " + ChocolateNut.SGetQuantity() + ")");
+    boxItems.push_back("2. " + currency + ChocolateBar.SGetBuyPrice() + priceText + ChocolateBar.GetName() + " (have " + ChocolateBar.SGetQuantity() + ")");
     boxItems.push_back(""); // line break
     boxItems.push_back("== Sour Candy ==");
     boxItems.push_back("3. " + currency + SourSoother.SGetBuyPrice() + priceText + SourSoother.GetName() + " (have " + SourSoother.SGetQuantity() + ")");
@@ -279,7 +282,7 @@ bool Tycoon::ValidPurchase(int candyPrice, int amount, std::string candyName)
             std::cout << "Cancelled, nothing was spent." << std::endl;
             return false;
         } else {
-            std::cout << "Purchase complete! Lost " << currency << (candyPrice * amount) << '.' << std::endl;
+            std::cout << "Purchase complete! Lost " << currency << Box.centsToString(candyPrice * amount) << '.' << std::endl;
             return true;
         }
     }
@@ -288,7 +291,120 @@ bool Tycoon::ValidPurchase(int candyPrice, int amount, std::string candyName)
 void Tycoon::PlayDay()
 {
     day++;
+
+    // chance for teacher to patrol
+        // choice: continue selling for 3x bonus (risk), forfeit to end day (safe)
+    DayPatrol();
+
+    // customers buy candy
+        // demand for a type of candy increases money earned from that type
+    DayCustomers();
+
+    ReportIncome();
+    ReportTotalBullyTax();
+
+    // check for win condition: $5000 money
+    CheckForWin();
+    // check for lose condition: bullies collect $500 in taxes, 3 strikes
+    CheckForLose();
+    system("pause");
     return;
+}
+
+void Tycoon::DayPatrol()
+{
+
+}
+
+void Tycoon::DayCustomers()
+{
+    // TODO: random demand
+
+    // buy from stock
+        // add to money for each purchase
+        // remove item from stock
+
+    Candy *candyArray[] = {
+        &ChocolateNut,   // 0
+        &ChocolateBar,   // 1
+        &SourSoother,    // 2
+        &SourFuzzyPeach, // 3
+        &SourPatchKids,  // 4
+        &GummyBear,      // 5
+        &GummyWorm,      // 6
+        &GumSpearmint,   // 7
+        &GumDubbleBubble // 8
+    };
+
+    srand( unsigned(time(0)) );
+    dayIncome = 0;
+
+    for (int currentCandy = 0; currentCandy < CANDY_AMOUNT; currentCandy++) {
+        int currentCandyStock = candyArray[currentCandy]->IGetQuantity();
+
+        if (currentCandyStock <= 4 && currentCandyStock > 0) {
+            DayCustomersBuyCandy(candyArray[currentCandy], currentCandyStock); // customers buy all the stock
+
+        } else if (currentCandyStock > 4) {
+            int buyMin = (int)(currentCandyStock / 3);
+            int buyMax = currentCandyStock - 2;
+            int randomBuyAmount = rand() % (buyMax - buyMin + 1) + buyMin;
+            DayCustomersBuyCandy(candyArray[currentCandy], randomBuyAmount);
+        }
+    }
+
+    return;
+}
+
+void Tycoon::DayCustomersBuyCandy(Candy *currentCandy, int amountSold)
+{
+    int income = (currentCandy->IGetSellPrice() * amountSold);
+    int tax = BullyTax(income);
+
+    std::cout << currentCandy->GetName() << ": sold " << amountSold << " for " << currency << Box.centsToString(income) << std::endl;
+    if (tax > 0) {
+        std::cout << "    Lost " << currency << Box.centsToString(tax) << " to bully tax." << std::endl << std::endl;
+    }
+
+    currentCandy->RemoveQuantity(amountSold);
+    money += income;
+    dayIncome += income;
+
+    return;
+}
+
+// Returns taxed money
+int Tycoon::BullyTax(int moneyToTax)
+{
+    int tax = (int)(moneyToTax * 0.05);
+    bullyMoney += tax;
+
+    return tax;
+}
+
+void Tycoon::ReportTotalBullyTax()
+{
+    bullyMoney += 15; // daily income, so you can't just wait around
+
+    std::cout << "Bully money: " << currency << Box.centsToString(bullyMoney) << std::endl;
+    return;
+}
+
+void Tycoon::ReportIncome()
+{
+    std::cout << "Today's income: " << currency << Box.centsToString(dayIncome) << std::endl;
+    return;
+}
+
+
+void Tycoon::CheckForWin()
+{
+
+}
+
+void Tycoon::CheckForLose()
+{
+
 }
 
 

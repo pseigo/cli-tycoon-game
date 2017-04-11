@@ -94,3 +94,9 @@ void Candy::AddQuantity(int purchaseAmount)
     quantity += purchaseAmount;
     return;
 }
+
+void Candy::RemoveQuantity(int purchaseAmount)
+{
+    quantity -= purchaseAmount;
+    return;
+}
