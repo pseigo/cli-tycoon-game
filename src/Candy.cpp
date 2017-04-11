@@ -23,8 +23,8 @@ int Candy::IGetBuyPrice() const { return buyPrice; }
 int Candy::IGetSellPrice() const { return sellPrice; }
 int Candy::IGetQuantity() const { return quantity; }
 
-std::string Candy::SGetBuyPrice() { return Box.toString(buyPrice); }
-std::string Candy::SGetSellPrice() { return Box.toString(sellPrice); }
+std::string Candy::SGetBuyPrice() { return Box.centsToString(buyPrice); }
+std::string Candy::SGetSellPrice() { return Box.centsToString(sellPrice); }
 std::string Candy::SGetQuantity() { return Box.toString(quantity); }
 
 // setter methods
@@ -40,48 +40,48 @@ void Candy::SetAttributes()
     if (id == "CHOCNUT") {
         name = "Chocolate Covered Nuts";
         type = "Chocolate";
-        buyPrice = 2;
-        sellPrice = 3;
+        buyPrice = 5;
+        sellPrice = 10;
     } else if (id == "CHOCBAR") {
         name = "Mini Chocolate Bar";
         type = "Chocolate";
-        buyPrice = 3;
-        sellPrice = 4;
+        buyPrice = 50;
+        sellPrice = 100;
     } else if (id == "SOURSOOTHER") {
         name = "Sour Soother";
         type = "Sour Candy";
-        buyPrice = 5;
-        sellPrice = 7;
+        buyPrice = 15;
+        sellPrice = 32;
     } else if (id == "SOURPEACH") {
         name = "Fuzzy Peaches";
         type = "Sour Candy";
-        buyPrice = 13;
-        sellPrice = 14;
+        buyPrice = 40;
+        sellPrice = 96;
     } else if (id == "SOURKIDS") {
         name = "Sour Patch Kids";
         type = "Sour Candy";
-        buyPrice = 19;
-        sellPrice = 25;
+        buyPrice = 25;
+        sellPrice = 75;
     } else if (id == "GUMMYBEAR") {
         name = "Gummy Bear";
         type = "Gummy Candy";
-        buyPrice = 15;
+        buyPrice = 10;
         sellPrice = 18;
     } else if (id == "GUMMYWORM") {
         name = "Gummy Worm";
         type = "Gummy Candy";
-        buyPrice = 16;
-        sellPrice = 22;
+        buyPrice = 15;
+        sellPrice = 18;
     } else if (id == "GUMSPEARMINT") {
         name = "Spearmint Gum";
         type = "Gum";
-        buyPrice = 31;
-        sellPrice = 41;
+        buyPrice = 499;
+        sellPrice = 999;
     } else if (id == "GUMDUBBLE") {
         name = "Dubble Bubble Gum";
         type = "Gum";
-        buyPrice = 1;
-        sellPrice = 2;
+        buyPrice = 99;
+        sellPrice = 199;
     } else {
         std::cerr << "NULL_ID (" << id << "): Can't set attributes of candy!" << std::endl;
     }

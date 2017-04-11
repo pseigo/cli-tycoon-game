@@ -7,8 +7,8 @@ void Tycoon::Reset()
 {
     boxItems.clear();
 
-    day = 0;
-    money = 15;
+    day = 1;
+    money = 100;
     currency = '$';
 
     // Candy
@@ -40,10 +40,11 @@ void Tycoon::PrintMainMenu()
     boxItems.clear();
     boxItems.push_back("Main Menu || Day: " + Box.toString(day));
     boxItems.push_back(Box.div);
-    boxItems.push_back("0. Exit game");
     boxItems.push_back("1. View inventory");
     boxItems.push_back("2. Go to the store");
     boxItems.push_back("3. Start the day");
+    boxItems.push_back(""); // line break
+    boxItems.push_back("0. Exit game");
     Box.drawBox(-1, boxItems);
 }
 
@@ -58,7 +59,7 @@ int Tycoon::GetMainMenuInput()
         std::cout << '\n';
 
         if (!std::cin.good() || (userChoice != 0 && userChoice != 1 && userChoice != 2 && userChoice != 3)) {
-            std::cout << "Invalid input. Must choose 0, 1, 2, or 3. \n" << std::endl;
+            std::cout << "Invalid input. Must choose 1, 2, 3, or 0. \n" << std::endl;
             std::cin.clear();
             std::cin.ignore(128, '\n');
         } else {
@@ -72,7 +73,7 @@ int Tycoon::GetMainMenuInput()
 void Tycoon::PrintInventory()
 {
     boxItems.clear();
-    boxItems.push_back("Inventory || Money: " + currency + Box.toString(money));
+    boxItems.push_back("Inventory || Money: " + currency + Box.centsToString(money));
     boxItems.push_back(Box.div);
     boxItems.push_back("== Chocolate ==");
     boxItems.push_back(ChocolateNut.SGetQuantity() + ' ' + ChocolateNut.GetName());
@@ -102,7 +103,7 @@ void Tycoon::PrintShop()
     std::string priceText = "/per ";
 
     boxItems.clear();
-    boxItems.push_back("Shop || Money: " + currency + Box.toString(money));
+    boxItems.push_back("Shop || Money: " + currency + Box.centsToString(money));
     boxItems.push_back(Box.div);
     boxItems.push_back("BULK: 50+ for 10% off, 100+ for 20% off!");
     boxItems.push_back(""); // line break
@@ -130,8 +131,9 @@ void Tycoon::PrintShop()
     */
 
     boxItems.push_back(""); // line break
-    boxItems.push_back("What would you like to buy?");
-    boxItems.push_back("    0. Exit store");
+    boxItems.push_back("What would you like to do?");
+    boxItems.push_back("    1-9. Buy item");
+    boxItems.push_back("    0. Exit shop");
 
     Box.drawBox(-1, boxItems);
     return;
@@ -187,6 +189,7 @@ bool Tycoon::GetShopInput()
         }
     }
 
+    // TODO: replace with a more flexible data structure
     switch (shopMenuChoice) {
     case 1:
         if ( ValidPurchase(ChocolateNut.IGetBuyPrice(), purchaseAmount, ChocolateNut.GetName()) ) {
@@ -243,17 +246,17 @@ bool Tycoon::ValidPurchase(int candyPrice, int amount, std::string candyName)
 {
     // check if can afford
     if ((candyPrice * amount) > money) {
-        std::cout << "INSUFFICIENT FUNDS. " << candyName << " costs " << currency << candyPrice * amount
-            << ", but you only have " << currency << money << "!" << std::endl;
-        std::cout << "\tCancelling transaction. \n" << std::endl;
+        std::cout << "INSUFFICIENT FUNDS. " << candyName << " costs " << currency << Box.centsToString(candyPrice * amount)
+            << ", but you only have " << currency << Box.centsToString(money) << "!" << std::endl;
+        // std::cout << "\tCancelling transaction. \n" << std::endl;
         return false;
     } else {
         boxItems.clear();
         boxItems.push_back("CONFIRM: Are you sure you want to buy this?");
-        boxItems.push_back(" ~ " + Box.toString(amount) + ' ' + candyName + " for " + currency + Box.toString(candyPrice * amount) + " @ " + currency + Box.toString(candyPrice) + " each.");
+        boxItems.push_back(" ~ " + Box.toString(amount) + ' ' + candyName + " for " + currency + Box.centsToString(candyPrice * amount) + " @ " + currency + Box.centsToString(candyPrice) + " each.");
         boxItems.push_back(""); // line break
-        boxItems.push_back("0. Cancel, I changed my mind!");
-        boxItems.push_back("1. Confirm purchase");
+        boxItems.push_back("1. Yes, buy!");
+        boxItems.push_back("0. No, cancel");
         Box.drawBox(-1, boxItems);
 
         int purchaseConfirm = 0;
@@ -264,7 +267,7 @@ bool Tycoon::ValidPurchase(int candyPrice, int amount, std::string candyName)
             std::cout << '\n';
 
             if (!std::cin.good() || (purchaseConfirm != 0 && purchaseConfirm != 1)) {
-                std::cout << "Invalid input. Must choose 0 or 1. \n" << std::endl;
+                std::cout << "Invalid input. Must choose 1 or 0. \n" << std::endl;
                 std::cin.clear();
                 std::cin.ignore(128, '\n');
             } else {
@@ -286,4 +289,32 @@ void Tycoon::PlayDay()
 {
     day++;
     return;
+}
+
+
+bool Tycoon::AskToQuit()
+{
+    boxItems.clear();
+    boxItems.push_back("Are you sure you want to quit? You will lose ALL of your progress!");
+    boxItems.push_back(""); // line break;
+    boxItems.push_back("1. Yes, quit the game AND lose my progress");
+    boxItems.push_back("0. No, keep playing");
+    Box.drawBox(68, boxItems);
+
+    int quitConfirm = 0;
+        while (true)
+        {
+            std::cout << ">> ";
+            std::cin >> quitConfirm;
+            std::cout << '\n';
+
+            if (!std::cin.good() || (quitConfirm != 0 && quitConfirm != 1)) {
+                std::cout << "Invalid input. Must choose 1 or 0. \n" << std::endl;
+                std::cin.clear();
+                std::cin.ignore(128, '\n');
+            } else {
+                if (quitConfirm) return true;
+                else return false;
+            }
+        }
 }

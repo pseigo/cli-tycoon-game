@@ -34,7 +34,7 @@ int main()
 
 void PrintIntro(FGraphic Box)
 {
-    vector<string> boxItems = {"Welcome to Candy Tycoon.", "0. Exit Game", "1. Start Game", "", Box.div, "To go where no second", "grader has gone before."};
+    vector<string> boxItems = {"Welcome to Candy Tycoon.", "1. Start Game", "0. Exit Game", "", Box.div, "To go where no second", "grader has gone before."};
     Box.drawBox(26, boxItems);
 }
 
@@ -64,6 +64,7 @@ void PlayGame()
 {
     Tycoon Tc;
     int mainMenuChoice;
+    bool exitGame = false;
 
     Tc.PrintStoryIntro();
 
@@ -86,6 +87,8 @@ void PlayGame()
             // TODO: the day
             Tc.PlayDay();
             break;
+        default:
+            exitGame = Tc.AskToQuit();
         }
-    } while (mainMenuChoice != 0);
+    } while (exitGame == false);
 }

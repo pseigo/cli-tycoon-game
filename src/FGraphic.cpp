@@ -95,7 +95,7 @@ std::string FGraphic::toString(int number)
 
     // calculating the length
     int length = 0;
-    for (length; pow(10,length) < number; length++);
+    for (length; (int)(pow(10,length)) <= number; length++);
 
     do
     {

@@ -30,6 +30,8 @@ class Tycoon
 
         void PlayDay();
 
+        bool AskToQuit();
+
     protected:
     private:
         FGraphic Box;
