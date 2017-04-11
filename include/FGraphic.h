@@ -21,6 +21,7 @@ public:
     // define boxwidth as an int. boxwidth < 1 will automatically set a width (slower). -100 reports auto length
     void drawBox(int, std::vector<std::string>) const;
     std::string toString(int number);
+    std::string centsToString(int cents);
 
 protected:
 private:

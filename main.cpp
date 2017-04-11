@@ -16,6 +16,7 @@ int main()
 {
     FGraphic Box;
 
+    // cout << Box.centsToString(1234567) << endl;
     // Main game loop
     do
     {
