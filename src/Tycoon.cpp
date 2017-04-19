@@ -8,7 +8,7 @@ void Tycoon::Reset()
     boxItems.clear();
 
     day = 1;
-    money = 100; // all money is in cents!
+    money = 100; // default is 100 .. all money is in cents!
     bullyMoney = 0;
     currency = '$';
 
@@ -24,6 +24,10 @@ void Tycoon::Reset()
     GummyWorm.SetId("GUMMYWORM");
     GumSpearmint.SetId("GUMSPEARMINT");
     GumDubbleBubble.SetId("GUMDUBBLE");
+
+    // Upgrades
+    Backpack.SetId("BACKPACK");
+    DuffleBag.SetId("DUFFLEBAG");
 }
 
 void Tycoon::PrintStoryIntro()
@@ -45,7 +49,8 @@ void Tycoon::PrintMainMenu()
     boxItems.push_back(Box.div);
     boxItems.push_back("1. View inventory");
     boxItems.push_back("2. Go to the store");
-    boxItems.push_back("3. Start the day");
+    boxItems.push_back("3. View upgrades");
+    boxItems.push_back("4. Start the day");
     boxItems.push_back(""); // line break
     boxItems.push_back("0. Exit game");
     Box.drawBox(-1, boxItems);
@@ -61,8 +66,8 @@ int Tycoon::GetMainMenuInput()
         std::cin >> userChoice;
         std::cout << '\n';
 
-        if (!std::cin.good() || (userChoice != 0 && userChoice != 1 && userChoice != 2 && userChoice != 3)) {
-            std::cout << "Invalid input. Must choose 1, 2, 3, or 0. \n" << std::endl;
+        if (!std::cin.good() || (userChoice < 0 || userChoice > 4)) {
+            std::cout << "Invalid input. Must choose from 1-4 or 0. \n" << std::endl;
             std::cin.clear();
             std::cin.ignore(128, '\n');
         } else {
@@ -288,7 +293,92 @@ bool Tycoon::ValidPurchase(int candyPrice, int amount, std::string candyName)
     }
 }
 
-void Tycoon::PlayDay()
+void Tycoon::PrintUpgrades()
+{
+    std::string separator = " | ";
+    std::string menuTab = "    ";
+
+    ClearScreen();
+    boxItems.clear();
+    boxItems.push_back("Upgrades || Money: " + currency + Box.centsToString(money));
+    //boxItems.push_back(""); // line break
+    boxItems.push_back(Box.div + " Supply " + Box.div);
+    boxItems.push_back("1. " + Backpack.SGetHaveUpgrade() + separator + Backpack.SGetName());
+    boxItems.push_back(menuTab + Backpack.SGetDescription());
+    boxItems.push_back("");
+    boxItems.push_back("2. " + DuffleBag.SGetHaveUpgrade() + separator + DuffleBag.SGetName());
+    boxItems.push_back(menuTab + DuffleBag.SGetDescription());
+    boxItems.push_back(""); // line break
+    boxItems.push_back("What would you like to do?");
+    boxItems.push_back(menuTab + "1-2. Buy upgrade (if not already owned)");
+    boxItems.push_back(menuTab + "0. Exit upgrade shop");
+
+    Box.drawBox(-1, boxItems);
+    return;
+}
+
+bool Tycoon::GetUpgradesInput()
+{
+    int upgradeMenuChoice = 0;
+
+    while (true)
+    {
+        std::cout << ">> ";
+        std::cin >> upgradeMenuChoice;
+        std::cout << '\n';
+
+        if (!std::cin.good() || (upgradeMenuChoice < 0 || upgradeMenuChoice > 2)) {
+            std::cout << "Invalid input. Must choose an item from 1-2 or 0 to exit shop. \n" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(128, '\n');
+        } else {
+            break;
+        }
+    }
+
+    if (upgradeMenuChoice == 0) { return false; }
+
+    Upgrade *upgradesArray[] = {
+        &Backpack,   // 0
+        &DuffleBag,   // 1
+    };
+
+    int purchaseChoice = upgradeMenuChoice - 1;
+    int purchaseAmount = 1;
+    bool alreadyOwnUpgrade = upgradesArray[purchaseChoice]->BGetHaveUpgrade();
+
+    std::cout << "thing: " << upgradesArray[purchaseChoice] << std::endl;
+    //std::cout << "have prereq: " << HaveUpgradePrereq[upgradesArray[purchaseChoice]] << std::endl;
+    //bool havePrerequisite = HaveUpgradePrereq[upgradesArray[purchaseChoice]];
+    bool havePrerequisite = false;
+
+    if (alreadyOwnUpgrade) {
+        std::cout << "You already own that upgrade!" << std::endl;
+        system("pause");
+        return true;
+    } else if (!havePrerequisite) {
+        std::cout << "You don't have the prerequisite for that upgrade!" << std::endl;
+        system("pause");
+        return true;
+    }
+
+    if ( ValidPurchase(upgradesArray[purchaseChoice]->IGetBuyPrice(), purchaseAmount, upgradesArray[purchaseChoice]->SGetName()) ) {
+        money -= upgradesArray[purchaseChoice]->IGetBuyPrice();
+        upgradesArray[purchaseChoice]->SetOwnership();
+    }
+
+    system("pause");
+    return true;
+}
+
+bool Tycoon::HaveUpgradePrereq(Upgrade *currentUpgrade)
+{
+    std::cout << currentUpgrade->SGetName();
+    return false;
+}
+
+/* DAY ================================================ */
+bool Tycoon::PlayDay()
 {
     day++;
 
@@ -303,12 +393,13 @@ void Tycoon::PlayDay()
     ReportIncome();
     ReportTotalBullyTax();
 
-    // check for win condition: $5000 money
-    CheckForWin();
-    // check for lose condition: bullies collect $500 in taxes, 3 strikes
-    CheckForLose();
+    if (GameIsWon() || GameIsLost()) {
+        EndGame();
+        return false;
+    }
+
     system("pause");
-    return;
+    return true;
 }
 
 void Tycoon::DayPatrol()
@@ -397,16 +488,37 @@ void Tycoon::ReportIncome()
 }
 
 
-void Tycoon::CheckForWin()
+bool Tycoon::GameIsWon()
 {
-
+    if (money >= 50000000) {
+        return true;
+    }
+    return false;
 }
 
-void Tycoon::CheckForLose()
+bool Tycoon::GameIsLost()
 {
-
+    return false;
 }
 
+void Tycoon::EndGame()
+{
+    ClearScreen();
+    boxItems.clear();
+
+    boxItems.push_back("=== GAME OVER. ====");
+    if (GameIsWon()) {
+        boxItems.push_back("Congratulations, you won! The legacy of your Candy Tycoon will live on forever.");
+    } else {
+        boxItems.push_back("Sorry, you lost. The legacy of Candy Tycoon will live on forever.");
+    }
+
+    boxItems.push_back(""); // line break
+    boxItems.push_back("You finished with " + currency + Box.centsToString(money));
+    boxItems.push_back("The bullies collected " + currency + Box.centsToString(bullyMoney));
+
+    Box.drawBox(-1, boxItems);
+}
 
 bool Tycoon::AskToQuit()
 {
