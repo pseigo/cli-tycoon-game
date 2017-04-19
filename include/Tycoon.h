@@ -10,6 +10,7 @@
 #include <ctime> // time for rand
 #include "../include/FGraphic.h"
 #include "../include/Candy.h"
+#include "../include/Upgrade.h"
 
 class Tycoon
 {
@@ -29,16 +30,20 @@ class Tycoon
         void PrintShop();
         bool GetShopInput();
         bool ValidPurchase(int candyPrice, int amount, std::string candyName);
+        void PrintUpgrades();
+        bool GetUpgradesInput();
+        bool HaveUpgradePrereq(Upgrade *currentUpgrade);
 
-        void PlayDay();
+        bool PlayDay();
         void DayPatrol();
         void DayCustomers();
         void DayCustomersBuyCandy(Candy *currentCandy, int amountPurchased);
         int BullyTax(int moneyToTax);
         void ReportTotalBullyTax();
         void ReportIncome();
-        void CheckForWin();
-        void CheckForLose();
+        bool GameIsWon();
+        bool GameIsLost();
+        void EndGame();
 
 
         bool AskToQuit();
@@ -62,6 +67,11 @@ class Tycoon
         Candy GumSpearmint, GumDubbleBubble;
 
         const int CANDY_AMOUNT = 9;
+
+        std::vector<Candy*> candyList;
+
+        // upgrades
+        Upgrade Backpack, DuffleBag;
 };
 
 #endif // TYCOON_H

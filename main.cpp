@@ -83,9 +83,15 @@ void PlayGame()
             } while (Tc.GetShopInput());
 
             break;
-        case 3: // start the day
-            // TODO: the day
-            Tc.PlayDay();
+        case 3:
+            do {
+                Tc.PrintUpgrades();
+            } while (Tc.GetUpgradesInput());
+            break;
+        case 4: // start the day
+            if (Tc.PlayDay() == 0) {
+                exitGame = true;
+            }
             break;
         default:
             exitGame = Tc.AskToQuit();

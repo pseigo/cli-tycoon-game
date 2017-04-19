@@ -8,7 +8,7 @@ void Tycoon::Reset()
     boxItems.clear();
 
     day = 1;
-    money = 100; // all money is in cents!
+    money = 100; // default is 100 .. all money is in cents!
     bullyMoney = 0;
     currency = '$';
 
@@ -24,6 +24,28 @@ void Tycoon::Reset()
     GummyWorm.SetId("GUMMYWORM");
     GumSpearmint.SetId("GUMSPEARMINT");
     GumDubbleBubble.SetId("GUMDUBBLE");
+
+    Candy *candyArray[] = {
+        &ChocolateNut,   // 0
+        &ChocolateBar,   // 1
+        &SourSoother,    // 2
+        &SourFuzzyPeach, // 3
+        &SourPatchKids,  // 4
+        &GummyBear,      // 5
+        &GummyWorm,      // 6
+        &GumSpearmint,   // 7
+        &GumDubbleBubble // 8
+    };
+
+    candyList.clear();
+    for (int i = 0; i < sizeof(candyArray) / sizeof(candyArray[0]); i++) {
+        candyList.push_back(candyArray[i]);
+        //std::cout << "Element " << i << " of candyList: " << candyList[i]->GetName() << std::endl;
+    }
+
+    // Upgrades
+    Backpack.SetId("BACKPACK");
+    DuffleBag.SetId("DUFFLEBAG");
 }
 
 void Tycoon::PrintStoryIntro()
@@ -45,7 +67,8 @@ void Tycoon::PrintMainMenu()
     boxItems.push_back(Box.div);
     boxItems.push_back("1. View inventory");
     boxItems.push_back("2. Go to the store");
-    boxItems.push_back("3. Start the day");
+    boxItems.push_back("3. View upgrades");
+    boxItems.push_back("4. Start the day");
     boxItems.push_back(""); // line break
     boxItems.push_back("0. Exit game");
     Box.drawBox(-1, boxItems);
@@ -61,8 +84,8 @@ int Tycoon::GetMainMenuInput()
         std::cin >> userChoice;
         std::cout << '\n';
 
-        if (!std::cin.good() || (userChoice != 0 && userChoice != 1 && userChoice != 2 && userChoice != 3)) {
-            std::cout << "Invalid input. Must choose 1, 2, 3, or 0. \n" << std::endl;
+        if (!std::cin.good() || (userChoice < 0 || userChoice > 4)) {
+            std::cout << "Invalid input. Must choose from 1-4 or 0. \n" << std::endl;
             std::cin.clear();
             std::cin.ignore(128, '\n');
         } else {
@@ -142,7 +165,7 @@ void Tycoon::PrintShop()
     return;
 }
 
-bool Tycoon::GetShopInput()
+bool Tycoon::GetShopInput() // TODO: bulk discounts
 {
     int shopMenuChoice = 0;
 
@@ -171,9 +194,6 @@ bool Tycoon::GetShopInput()
      * loop back.
     */
 
-    /* std::map<int, std::string> candyMap{ {1, "ChocolateNut"} };
-    std::cout << candyMap[1].GetName() << std::endl; */
-
     std::cout << "How many would you like to buy?" << std::endl;
 
     int purchaseAmount = 0;
@@ -192,53 +212,15 @@ bool Tycoon::GetShopInput()
         }
     }
 
-    // TODO: replace with a more flexible data structure
-    switch (shopMenuChoice) {
-    case 1:
-        if ( ValidPurchase(ChocolateNut.IGetBuyPrice(), purchaseAmount, ChocolateNut.GetName()) ) {
-            money -= (ChocolateNut.IGetBuyPrice() * purchaseAmount);
-            ChocolateNut.AddQuantity(purchaseAmount);
-        } break;
-    case 2:
-        if ( ValidPurchase(ChocolateBar.IGetBuyPrice(), purchaseAmount, ChocolateBar.GetName()) ) {
-            money -= (ChocolateBar.IGetBuyPrice() * purchaseAmount);
-            ChocolateBar.AddQuantity(purchaseAmount);
-        } break;
-    case 3:
-        if ( ValidPurchase(SourSoother.IGetBuyPrice(), purchaseAmount, SourSoother.GetName()) ) {
-            money -= (SourSoother.IGetBuyPrice() * purchaseAmount);
-            SourSoother.AddQuantity(purchaseAmount);
-        } break;
-    case 4:
-        if ( ValidPurchase(SourFuzzyPeach.IGetBuyPrice(), purchaseAmount, SourFuzzyPeach.GetName()) ) {
-            money -= (SourFuzzyPeach.IGetBuyPrice() * purchaseAmount);
-            SourFuzzyPeach.AddQuantity(purchaseAmount);
-        } break;
-    case 5:
-        if ( ValidPurchase(SourPatchKids.IGetBuyPrice(), purchaseAmount, SourPatchKids.GetName()) ) {
-            money -= (SourPatchKids.IGetBuyPrice() * purchaseAmount);
-            SourPatchKids.AddQuantity(purchaseAmount);
-        } break;
-    case 6:
-        if ( ValidPurchase(GummyBear.IGetBuyPrice(), purchaseAmount, GummyBear.GetName()) ) {
-            money -= (GummyBear.IGetBuyPrice() * purchaseAmount);
-            GummyBear.AddQuantity(purchaseAmount);
-        } break;
-    case 7:
-        if ( ValidPurchase(GummyWorm.IGetBuyPrice(), purchaseAmount, GummyWorm.GetName()) ) {
-            money -= (GummyWorm.IGetBuyPrice() * purchaseAmount);
-            GummyWorm.AddQuantity(purchaseAmount);
-        } break;
-    case 8:
-        if ( ValidPurchase(GumSpearmint.IGetBuyPrice(), purchaseAmount, GumSpearmint.GetName()) ) {
-            money -= (GumSpearmint.IGetBuyPrice() * purchaseAmount);
-            GumSpearmint.AddQuantity(purchaseAmount);
-        } break;
-    case 9:
-        if ( ValidPurchase(GumDubbleBubble.IGetBuyPrice(), purchaseAmount, GumDubbleBubble.GetName()) ) {
-            money -= (GumDubbleBubble.IGetBuyPrice() * purchaseAmount);
-            GumDubbleBubble.AddQuantity(purchaseAmount);
-        } break;
+    /*
+     * If the user can afford the item -> ValidPurchase(price, amount, name);
+     *      remove money according to the buy price * buy amount
+     *      add quantity bought to inventory
+    */
+    int candyIndex = shopMenuChoice -\cd 1;
+    if ( ValidPurchase(candyList[candyIndex]->IGetBuyPrice(), purchaseAmount, candyList[candyIndex]->GetName()) ) {
+            money -= (candyList[candyIndex]->IGetBuyPrice() * purchaseAmount);
+            candyList[candyIndex]->AddQuantity(purchaseAmount);
     }
 
     system("pause");
@@ -288,7 +270,92 @@ bool Tycoon::ValidPurchase(int candyPrice, int amount, std::string candyName)
     }
 }
 
-void Tycoon::PlayDay()
+void Tycoon::PrintUpgrades()
+{
+    std::string separator = " | ";
+    std::string menuTab = "    ";
+
+    ClearScreen();
+    boxItems.clear();
+    boxItems.push_back("Upgrades || Money: " + currency + Box.centsToString(money));
+    //boxItems.push_back(""); // line break
+    boxItems.push_back(Box.div + " Supply " + Box.div);
+    boxItems.push_back("1. " + Backpack.SGetHaveUpgrade() + separator + Backpack.SGetName());
+    boxItems.push_back(menuTab + Backpack.SGetDescription());
+    boxItems.push_back("");
+    boxItems.push_back("2. " + DuffleBag.SGetHaveUpgrade() + separator + DuffleBag.SGetName());
+    boxItems.push_back(menuTab + DuffleBag.SGetDescription());
+    boxItems.push_back(""); // line break
+    boxItems.push_back("What would you like to do?");
+    boxItems.push_back(menuTab + "1-2. Buy upgrade (if not already owned)");
+    boxItems.push_back(menuTab + "0. Exit upgrade shop");
+
+    Box.drawBox(-1, boxItems);
+    return;
+}
+
+bool Tycoon::GetUpgradesInput()
+{
+    int upgradeMenuChoice = 0;
+
+    while (true)
+    {
+        std::cout << ">> ";
+        std::cin >> upgradeMenuChoice;
+        std::cout << '\n';
+
+        if (!std::cin.good() || (upgradeMenuChoice < 0 || upgradeMenuChoice > 2)) {
+            std::cout << "Invalid input. Must choose an item from 1-2 or 0 to exit shop. \n" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(128, '\n');
+        } else {
+            break;
+        }
+    }
+
+    if (upgradeMenuChoice == 0) { return false; }
+
+    Upgrade *upgradesArray[] = {
+        &Backpack,   // 0
+        &DuffleBag,   // 1
+    };
+
+    int purchaseChoice = upgradeMenuChoice - 1;
+    int purchaseAmount = 1;
+    bool alreadyOwnUpgrade = upgradesArray[purchaseChoice]->BGetHaveUpgrade();
+
+    std::cout << "thing: " << upgradesArray[purchaseChoice] << std::endl;
+    //std::cout << "have prereq: " << HaveUpgradePrereq[upgradesArray[purchaseChoice]] << std::endl;
+    //bool havePrerequisite = HaveUpgradePrereq[upgradesArray[purchaseChoice]];
+    bool havePrerequisite = false;
+
+    if (alreadyOwnUpgrade) {
+        std::cout << "You already own that upgrade!" << std::endl;
+        system("pause");
+        return true;
+    } else if (!havePrerequisite) {
+        std::cout << "You don't have the prerequisite for that upgrade!" << std::endl;
+        system("pause");
+        return true;
+    }
+
+    if ( ValidPurchase(upgradesArray[purchaseChoice]->IGetBuyPrice(), purchaseAmount, upgradesArray[purchaseChoice]->SGetName()) ) {
+        money -= upgradesArray[purchaseChoice]->IGetBuyPrice();
+        upgradesArray[purchaseChoice]->SetOwnership();
+    }
+
+    system("pause");
+    return true;
+}
+
+bool Tycoon::HaveUpgradePrereq(Upgrade *currentUpgrade)
+{
+    std::cout << currentUpgrade->SGetName();
+    return false;
+}
+
+/* DAY ================================================ */
+bool Tycoon::PlayDay()
 {
     day++;
 
@@ -303,12 +370,13 @@ void Tycoon::PlayDay()
     ReportIncome();
     ReportTotalBullyTax();
 
-    // check for win condition: $5000 money
-    CheckForWin();
-    // check for lose condition: bullies collect $500 in taxes, 3 strikes
-    CheckForLose();
+    if (GameIsWon() || GameIsLost()) {
+        EndGame();
+        return false;
+    }
+
     system("pause");
-    return;
+    return true;
 }
 
 void Tycoon::DayPatrol()
@@ -324,32 +392,20 @@ void Tycoon::DayCustomers()
         // add to money for each purchase
         // remove item from stock
 
-    Candy *candyArray[] = {
-        &ChocolateNut,   // 0
-        &ChocolateBar,   // 1
-        &SourSoother,    // 2
-        &SourFuzzyPeach, // 3
-        &SourPatchKids,  // 4
-        &GummyBear,      // 5
-        &GummyWorm,      // 6
-        &GumSpearmint,   // 7
-        &GumDubbleBubble // 8
-    };
-
     srand( unsigned(time(0)) );
     dayIncome = 0;
 
     for (int currentCandy = 0; currentCandy < CANDY_AMOUNT; currentCandy++) {
-        int currentCandyStock = candyArray[currentCandy]->IGetQuantity();
+        int currentCandyStock = candyList[currentCandy]->IGetQuantity();
 
         if (currentCandyStock <= 4 && currentCandyStock > 0) {
-            DayCustomersBuyCandy(candyArray[currentCandy], currentCandyStock); // customers buy all the stock
+            DayCustomersBuyCandy(candyList[currentCandy], currentCandyStock); // customers buy all the stock
 
         } else if (currentCandyStock > 4) {
             int buyMin = (int)(currentCandyStock / 3);
             int buyMax = currentCandyStock - 2;
             int randomBuyAmount = rand() % (buyMax - buyMin + 1) + buyMin;
-            DayCustomersBuyCandy(candyArray[currentCandy], randomBuyAmount);
+            DayCustomersBuyCandy(candyList[currentCandy], randomBuyAmount);
         }
     }
 
@@ -397,16 +453,37 @@ void Tycoon::ReportIncome()
 }
 
 
-void Tycoon::CheckForWin()
+bool Tycoon::GameIsWon()
 {
-
+    if (money >= 50000000) {
+        return true;
+    }
+    return false;
 }
 
-void Tycoon::CheckForLose()
+bool Tycoon::GameIsLost()
 {
-
+    return false;
 }
 
+void Tycoon::EndGame()
+{
+    ClearScreen();
+    boxItems.clear();
+
+    boxItems.push_back("=== GAME OVER. ====");
+    if (GameIsWon()) {
+        boxItems.push_back("Congratulations, you won! The legacy of your Candy Tycoon will live on forever.");
+    } else {
+        boxItems.push_back("Sorry, you lost. The legacy of Candy Tycoon will live on forever.");
+    }
+
+    boxItems.push_back(""); // line break
+    boxItems.push_back("You finished with " + currency + Box.centsToString(money));
+    boxItems.push_back("The bullies collected " + currency + Box.centsToString(bullyMoney));
+
+    Box.drawBox(-1, boxItems);
+}
 
 bool Tycoon::AskToQuit()
 {
