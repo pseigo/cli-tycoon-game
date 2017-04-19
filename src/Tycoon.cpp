@@ -217,7 +217,7 @@ bool Tycoon::GetShopInput() // TODO: bulk discounts
      *      remove money according to the buy price * buy amount
      *      add quantity bought to inventory
     */
-    int candyIndex = shopMenuChoice -\cd 1;
+    int candyIndex = shopMenuChoice - 1;
     if ( ValidPurchase(candyList[candyIndex]->IGetBuyPrice(), purchaseAmount, candyList[candyIndex]->GetName()) ) {
             money -= (candyList[candyIndex]->IGetBuyPrice() * purchaseAmount);
             candyList[candyIndex]->AddQuantity(purchaseAmount);
