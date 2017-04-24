@@ -41,32 +41,32 @@ void Candy::SetAttributes()
         name = "Chocolate Covered Nuts";
         type = "Chocolate";
         buyPrice = 5;
-        sellPrice = 10;
+        sellPrice = 9;
     } else if (id == "CHOCBAR") {
         name = "Mini Chocolate Bar";
         type = "Chocolate";
         buyPrice = 50;
-        sellPrice = 100;
+        sellPrice = 63;
     } else if (id == "SOURSOOTHER") {
         name = "Sour Soother";
         type = "Sour Candy";
         buyPrice = 15;
-        sellPrice = 32;
+        sellPrice = 25;
     } else if (id == "SOURPEACH") {
         name = "Fuzzy Peaches";
         type = "Sour Candy";
-        buyPrice = 40;
-        sellPrice = 96;
+        buyPrice = 60;
+        sellPrice = 54;
     } else if (id == "SOURKIDS") {
         name = "Sour Patch Kids";
         type = "Sour Candy";
         buyPrice = 25;
-        sellPrice = 75;
+        sellPrice = 36;
     } else if (id == "GUMMYBEAR") {
         name = "Gummy Bear";
         type = "Gummy Candy";
         buyPrice = 10;
-        sellPrice = 18;
+        sellPrice = 7;
     } else if (id == "GUMMYWORM") {
         name = "Gummy Worm";
         type = "Gummy Candy";
@@ -75,13 +75,13 @@ void Candy::SetAttributes()
     } else if (id == "GUMSPEARMINT") {
         name = "Spearmint Gum";
         type = "Gum";
-        buyPrice = 499;
-        sellPrice = 999;
+        buyPrice = 199;
+        sellPrice = 219;
     } else if (id == "GUMDUBBLE") {
         name = "Dubble Bubble Gum";
         type = "Gum";
-        buyPrice = 99;
-        sellPrice = 199;
+        buyPrice = 49;
+        sellPrice = 58;
     } else {
         std::cerr << "NULL_ID (" << id << "): Can't set attributes of candy!" << std::endl;
     }

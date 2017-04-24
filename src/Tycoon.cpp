@@ -8,7 +8,7 @@ void Tycoon::Reset()
     boxItems.clear();
 
     day = 1;
-    money = 100; // default is 100 .. all money is in cents!
+    money = 10; // default is 100 .. all money is in cents!
     bullyMoney = 0;
     currency = '$';
 
@@ -331,12 +331,10 @@ bool Tycoon::GetUpgradesInput()
     // BEGIN purchase item algorithm with error checking
     int purchaseChoice = upgradeMenuChoice - 1;
     int purchaseAmount = 1;
-    bool alreadyOwnUpgrade = upgradesList[purchaseChoice]->BGetHaveUpgrade();
-
-    std::cout << "have prereq: " << HaveUpgradePrereq(upgradesList[purchaseChoice]) << std::endl;
+    bool ownUpgrade = upgradesList[purchaseChoice]->BGetHaveUpgrade();
     bool havePrerequisite = HaveUpgradePrereq(upgradesList[purchaseChoice]);
 
-    if (alreadyOwnUpgrade) {
+    if (ownUpgrade) {
         std::cout << "You already own that upgrade!" << std::endl;
         system("pause");
         return true;
