@@ -25,6 +25,7 @@ void Tycoon::Reset()
     GumSpearmint.SetId("GUMSPEARMINT");
     GumDubbleBubble.SetId("GUMDUBBLE");
 
+    // push candy pointers to candyList
     Candy *candyArray[] = {
         &ChocolateNut,   // 0
         &ChocolateBar,   // 1
@@ -40,6 +41,18 @@ void Tycoon::Reset()
     candyList.clear();
     for (int i = 0; i < sizeof(candyArray) / sizeof(candyArray[0]); i++) {
         candyList.push_back(candyArray[i]);
+        //std::cout << "Element " << i << " of candyList: " << candyList[i]->GetName() << std::endl;
+    }
+
+    // Push upgrade pointers to upgradesList
+    Upgrade *upgradesArray[] = {
+        &Backpack,   // 0
+        &DuffleBag,   // 1
+    };
+
+    upgradesList.clear();
+    for (int i = 0; i < sizeof(upgradesArray) / sizeof(upgradesArray[0]); i++) {
+        upgradesList.push_back(upgradesArray[i]);
         //std::cout << "Element " << i << " of candyList: " << candyList[i]->GetName() << std::endl;
     }
 
@@ -315,18 +328,14 @@ bool Tycoon::GetUpgradesInput()
 
     if (upgradeMenuChoice == 0) { return false; }
 
-    Upgrade *upgradesArray[] = {
-        &Backpack,   // 0
-        &DuffleBag,   // 1
-    };
-
+    // BEGIN purchase item algorithm with error checking
     int purchaseChoice = upgradeMenuChoice - 1;
     int purchaseAmount = 1;
-    bool alreadyOwnUpgrade = upgradesArray[purchaseChoice]->BGetHaveUpgrade();
+    bool alreadyOwnUpgrade = upgradesList[purchaseChoice]->BGetHaveUpgrade();
 
-    std::cout << "thing: " << upgradesArray[purchaseChoice] << std::endl;
-    //std::cout << "have prereq: " << HaveUpgradePrereq[upgradesArray[purchaseChoice]] << std::endl;
-    //bool havePrerequisite = HaveUpgradePrereq[upgradesArray[purchaseChoice]];
+    std::cout << "thing: " << upgradesList[purchaseChoice] << std::endl;
+    // std::cout << "have prereq: " << HaveUpgradePrereq[upgradesList[purchaseChoice]] << std::endl;
+    //bool havePrerequisite = HaveUpgradePrereq[upgradesList[purchaseChoice]];
     bool havePrerequisite = false;
 
     if (alreadyOwnUpgrade) {
@@ -339,9 +348,9 @@ bool Tycoon::GetUpgradesInput()
         return true;
     }
 
-    if ( ValidPurchase(upgradesArray[purchaseChoice]->IGetBuyPrice(), purchaseAmount, upgradesArray[purchaseChoice]->SGetName()) ) {
-        money -= upgradesArray[purchaseChoice]->IGetBuyPrice();
-        upgradesArray[purchaseChoice]->SetOwnership();
+    if ( ValidPurchase(upgradesList[purchaseChoice]->IGetBuyPrice(), purchaseAmount, upgradesList[purchaseChoice]->SGetName()) ) {
+        money -= upgradesList[purchaseChoice]->IGetBuyPrice();
+        upgradesList[purchaseChoice]->SetOwnership();
     }
 
     system("pause");

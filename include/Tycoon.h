@@ -69,6 +69,7 @@ class Tycoon
         const int CANDY_AMOUNT = 9;
 
         std::vector<Candy*> candyList;
+        std::vector<Upgrade*> upgradesList;
 
         // upgrades
         Upgrade Backpack, DuffleBag;
