@@ -333,10 +333,8 @@ bool Tycoon::GetUpgradesInput()
     int purchaseAmount = 1;
     bool alreadyOwnUpgrade = upgradesList[purchaseChoice]->BGetHaveUpgrade();
 
-    std::cout << "thing: " << upgradesList[purchaseChoice] << std::endl;
-    // std::cout << "have prereq: " << HaveUpgradePrereq[upgradesList[purchaseChoice]] << std::endl;
-    //bool havePrerequisite = HaveUpgradePrereq[upgradesList[purchaseChoice]];
-    bool havePrerequisite = false;
+    std::cout << "have prereq: " << HaveUpgradePrereq(upgradesList[purchaseChoice]) << std::endl;
+    bool havePrerequisite = HaveUpgradePrereq(upgradesList[purchaseChoice]);
 
     if (alreadyOwnUpgrade) {
         std::cout << "You already own that upgrade!" << std::endl;
@@ -357,9 +355,18 @@ bool Tycoon::GetUpgradesInput()
     return true;
 }
 
+// TODO: make this more elegant, I don't want to rely on if statement structures
 bool Tycoon::HaveUpgradePrereq(Upgrade *currentUpgrade)
 {
-    std::cout << currentUpgrade->SGetName();
+    std::string id = currentUpgrade->SGetId();
+
+    if (id == "DUFFLEBAG") {
+        if (Backpack.BGetHaveUpgrade())
+            return true;
+    } else {
+        return true;
+    }
+
     return false;
 }
 
