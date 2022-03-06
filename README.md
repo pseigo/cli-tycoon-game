@@ -1,5 +1,5 @@
 # Candy Tycoon
 
-Project for a high school computer science course.
+Command line tycoon game made for a high school computer science course.
 
-![Animated image demoing the candy tycoon console game.](doc/tycoon-demo.gif)
+![Animation showing the tycoon game from the command line.](doc/tycoon-demo.gif)
