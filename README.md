@@ -1,4 +1,4 @@
-# Candy Tycoon
+# Candy Tycoon - Command Line Game
 
 Command line tycoon game made for a high school computer science course.
 
